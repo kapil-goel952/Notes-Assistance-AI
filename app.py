@@ -184,7 +184,7 @@ elif option == "🔎 Search Notes":
         else:
 
             st.warning("No matching notes found.")
-# =========================
+# # =========================
 # ASK AI ABOUT NOTES
 # =========================
 
@@ -245,6 +245,53 @@ If the notes contain an error, point it out clearly.
             st.session_state["ai_answer"] = answer
             st.session_state["ai_question"] = question
 
+
+    # =========================
+    # SHOW AI RESPONSE
+    # =========================
+
+    if "ai_answer" in st.session_state:
+
+        st.subheader("💡 AI Response")
+
+        st.write(st.session_state["ai_answer"])
+
+
+        # =========================
+        # SAVE AI RESPONSE
+        # =========================
+
+        st.divider()
+
+        st.subheader("💾 Save AI Response")
+
+        save_title = st.text_input(
+            "Note Title",
+            value=f"AI Answer - {st.session_state['ai_question']}"
+        )
+
+        if st.button("💾 Save to Notes"):
+
+            if not save_title.strip():
+
+                st.warning("Please enter a note title.")
+
+            else:
+
+                new_note = {
+                    "title": save_title,
+                    "content": st.session_state["ai_answer"]
+                }
+
+                notes.append(new_note)
+
+                save_notes(notes)
+
+                st.success("✅ AI response saved to your notes!")
+
+                # Remove temporary response after saving
+                del st.session_state["ai_answer"]
+                del st.session_state["ai_question"]
 
     # =========================
     # SHOW AI RESPONSE
