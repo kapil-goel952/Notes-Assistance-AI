@@ -32,7 +32,8 @@ def load_notes():
     try:
         with open(NOTES_FILE, "r", encoding="utf-8") as file:
             return json.load(file)
-    except:
+
+    except (json.JSONDecodeError, OSError):
         return []
 
 
@@ -110,7 +111,7 @@ if option == "📝 Add Note":
 
     if st.button("💾 Save Note"):
 
-        if not title or not content:
+        if not title.strip() or not content.strip():
             st.warning("Please enter both title and content.")
 
         else:
@@ -161,16 +162,18 @@ elif option == "🔎 Search Notes":
         "Search keyword"
     )
 
-    if keyword:
+    if keyword.strip():
+
+        keyword = keyword.lower()
 
         results = []
 
         for note in notes:
 
             if (
-                keyword.lower() in note["title"].lower()
+                keyword in note["title"].lower()
                 or
-                keyword.lower() in note["content"].lower()
+                keyword in note["content"].lower()
             ):
                 results.append(note)
 
@@ -210,7 +213,7 @@ elif option == "🧠 Ask AI About Notes":
 
             st.warning("You don't have any notes yet.")
 
-        elif not question:
+        elif not question.strip():
 
             st.warning("Please enter a question.")
 
@@ -247,6 +250,7 @@ If the notes contain an error, point it out clearly.
             st.session_state["ai_answer"] = answer
             st.session_state["ai_question"] = question
 
+
     # =========================
     # SHOW AI RESPONSE
     # =========================
@@ -256,6 +260,7 @@ If the notes contain an error, point it out clearly.
         st.subheader("💡 AI Response")
 
         st.write(st.session_state["ai_answer"])
+
 
         # =========================
         # SAVE AI RESPONSE
@@ -290,8 +295,8 @@ If the notes contain an error, point it out clearly.
                 st.success("✅ AI response saved to your notes!")
 
                 # Remove temporary response after saving
-                del st.session_state["ai_answer"]
-                del st.session_state["ai_question"]
+                st.session_state.pop("ai_answer", None)
+                st.session_state.pop("ai_question", None)
 
 
 # =========================
@@ -309,7 +314,7 @@ elif option == "🤖 Chat with AI":
 
     if st.button("🚀 Send"):
 
-        if not question:
+        if not question.strip():
 
             st.warning("Please enter a question.")
 
