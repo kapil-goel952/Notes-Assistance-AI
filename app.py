@@ -247,7 +247,6 @@ If the notes contain an error, point it out clearly.
             st.session_state["ai_answer"] = answer
             st.session_state["ai_question"] = question
 
-
     # =========================
     # SHOW AI RESPONSE
     # =========================
@@ -257,7 +256,6 @@ If the notes contain an error, point it out clearly.
         st.subheader("💡 AI Response")
 
         st.write(st.session_state["ai_answer"])
-
 
         # =========================
         # SAVE AI RESPONSE
