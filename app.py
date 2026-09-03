@@ -1036,58 +1036,121 @@ Instructions:
                         None
                     )
 
-
 # =========================================================
-# NORMAL AI CHAT
+# MULTI-TURN AI CHAT
 # =========================================================
 
 elif option == "🤖 Chat with AI":
 
-    st.header(
-        "🤖 Chat with Gemini"
-    )
+    st.header("🤖 Chat with Gemini")
 
     st.write(
-        "Ask Gemini anything."
+        "Have a conversation with Gemini. "
+        "The AI remembers the current chat."
     )
 
+    # Create chat history
+    if "chat_history" not in st.session_state:
 
-    question = st.text_area(
-        "Ask anything",
-        placeholder=(
-            "Example: Explain Python functions "
-            "in simple words."
-        ),
-        height=150
-    )
+        st.session_state.chat_history = []
 
 
-    if st.button(
-        "🚀 Send",
-        use_container_width=True
-    ):
+    # =========================================
+    # DISPLAY CHAT HISTORY
+    # =========================================
 
-        if not question.strip():
+    for message in st.session_state.chat_history:
 
-            st.warning(
-                "⚠️ Please enter a question."
+        with st.chat_message(
+            message["role"]
+        ):
+
+            st.write(
+                message["content"]
             )
 
-        else:
 
-            with st.spinner(
-                "🤖 Gemini is thinking..."
-            ):
+    # =========================================
+    # USER INPUT
+    # =========================================
 
-                answer = ask_gemini(
-                    question
+    user_message = st.chat_input(
+        "Ask Gemini something..."
+    )
+
+
+    if user_message:
+
+        # Add user message
+        st.session_state.chat_history.append(
+            {
+                "role": "user",
+                "content": user_message
+            }
+        )
+
+
+        # Show user message
+        with st.chat_message("user"):
+
+            st.write(user_message)
+
+
+        # Build conversation for Gemini
+        conversation = ""
+
+        for message in st.session_state.chat_history:
+
+            if message["role"] == "user":
+
+                conversation += (
+                    f"User: {message['content']}\n"
+                )
+
+            else:
+
+                conversation += (
+                    f"Assistant: {message['content']}\n"
                 )
 
 
-            st.subheader(
-                "💡 AI Response"
-            )
+        prompt = f"""
+You are Notes Assistant AI.
 
-            st.write(
-                answer
-            )
+Have a helpful, natural conversation with the user.
+
+Remember the previous conversation and use it
+to understand follow-up questions.
+
+CONVERSATION:
+{conversation}
+
+Respond to the user's latest message clearly
+and helpfully.
+"""
+        # =========================================
+        # GET GEMINI RESPONSE
+        # =========================================
+        with st.chat_message("assistant"):
+            with st.spinner(
+                "🤖 Gemini is thinking..."
+            ):
+                answer = ask_gemini(prompt)
+            st.write(answer)
+        # Save AI response
+        st.session_state.chat_history.append(
+            {
+                "role": "assistant",
+                "content": answer
+            }
+        )
+    # =========================================
+    # CLEAR CHAT
+    # =========================================
+    if st.session_state.chat_history:
+        if st.button(
+            "🗑️ Clear Chat",
+            use_container_width=True
+        ):
+            st.session_state.chat_history = []
+            st.rerun()
