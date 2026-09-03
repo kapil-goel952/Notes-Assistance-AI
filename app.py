@@ -4,6 +4,9 @@ import streamlit as st
 from dotenv import load_dotenv
 from google import genai
 
+import firebase_admin
+from firebase_admin import credentials, firestore, auth
+import requests
 # =========================
 # CONFIGURATION
 # =========================
@@ -11,7 +14,21 @@ from google import genai
 load_dotenv()
 
 API_KEY = os.getenv("GEMINI_API_KEY")
+FIREBASE_API_KEY = os.getenv("FIREBASE_API_KEY")
 
+if not FIREBASE_API_KEY:
+    st.error("❌ Firebase API key not found.")
+    st.stop()
+
+
+# Firebase Admin SDK
+if not firebase_admin._apps:
+    cred = credentials.Certificate(
+        "notes-assistant-ai-firebase-adminsdk-fbsvc-fc69cf4ed2.json"
+    )
+    firebase_admin.initialize_app(cred)
+
+db = firestore.client()
 if not API_KEY:
     st.error("❌ Gemini API key not found. Check your .env file.")
     st.stop()
@@ -326,4 +343,124 @@ elif option == "🤖 Chat with AI":
 
             st.subheader("AI Response")
             st.write(answer)
-            # asdfadf
+    # =========================
+# LOGIN SYSTEM
+# =========================
+
+if "user" not in st.session_state:
+    st.session_state.user = None
+
+
+if st.session_state.user is None:
+
+    st.title("🤖 Notes Assistant AI")
+
+    st.subheader("🔐 Login / Sign Up")
+
+    tab1, tab2 = st.tabs(["Login", "Create Account"])
+
+    # LOGIN
+    with tab1:
+
+        login_email = st.text_input(
+            "Email",
+            key="login_email"
+        )
+
+        login_password = st.text_input(
+            "Password",
+            type="password",
+            key="login_password"
+        )
+
+        if st.button("🔑 Login"):
+
+            if not login_email or not login_password:
+
+                st.warning("Please enter email and password.")
+
+            else:
+
+                result = firebase_login(
+                    login_email,
+                    login_password
+                )
+
+                if "idToken" in result:
+
+                    decoded_token = verify_firebase_token(
+                        result["idToken"]
+                    )
+
+                    if decoded_token:
+
+                        st.session_state.user = decoded_token
+
+                        st.success("✅ Login successful!")
+
+                        st.rerun()
+
+                    else:
+
+                        st.error("❌ Could not verify Firebase token.")
+
+                else:
+
+                    st.error(
+                        result.get(
+                            "error",
+                            {}
+                        ).get(
+                            "message",
+                            "Login failed."
+                        )
+                    )
+
+    # SIGN UP
+    with tab2:
+
+        signup_email = st.text_input(
+            "Email",
+            key="signup_email"
+        )
+
+        signup_password = st.text_input(
+            "Password",
+            type="password",
+            key="signup_password"
+        )
+
+        if st.button("📝 Create Account"):
+
+            if not signup_email or not signup_password:
+
+                st.warning(
+                    "Please enter email and password."
+                )
+
+            else:
+
+                result = firebase_signup(
+                    signup_email,
+                    signup_password
+                )
+
+                if "idToken" in result:
+
+                    st.success(
+                        "✅ Account created! Please login."
+                    )
+
+                else:
+
+                    st.error(
+                        result.get(
+                            "error",
+                            {}
+                        ).get(
+                            "message",
+                            "Signup failed."
+                        )
+                    )
+
+    st.stop()

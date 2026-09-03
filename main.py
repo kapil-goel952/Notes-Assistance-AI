@@ -403,7 +403,52 @@ def main():
             print("❌ Invalid choice.")
 
 
+# =========================
+# FIREBASE AUTH FUNCTIONS
+# =========================
 
+def firebase_signup(email, password):
+    url = (
+        "https://identitytoolkit.googleapis.com/v1/"
+        f"accounts:signUp?key={FIREBASE_API_KEY}"
+    )
+
+    data = {
+        "email": email,
+        "password": password,
+        "returnSecureToken": True
+    }
+
+    response = requests.post(url, json=data)
+
+    return response.json()
+
+
+def firebase_login(email, password):
+    url = (
+        "https://identitytoolkit.googleapis.com/v1/"
+        f"accounts:signInWithPassword?key={FIREBASE_API_KEY}"
+    )
+
+    data = {
+        "email": email,
+        "password": password,
+        "returnSecureToken": True
+    }
+
+    response = requests.post(url, json=data)
+
+    return response.json()
+
+
+def verify_firebase_token(id_token):
+    try:
+        decoded_token = auth.verify_id_token(id_token)
+
+        return decoded_token
+
+    except Exception:
+        return None
 # ==========================================
 # START PROGRAM
 # ==========================================

@@ -1,4 +1,7 @@
 .env
 .venv/
 __pycache__/
-*.pyc
+*.
+.env.local
+.env.*.local
+notes-assistant-ai-firebase-adminsdk-fbsvc-fc69cf4ed2.json
