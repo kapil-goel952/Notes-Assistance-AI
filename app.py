@@ -36,9 +36,9 @@ if not FIREBASE_API_KEY:
 
 if not firebase_admin._apps:
 
-    cred = credentials.Certificate(
-        "notes-assistant-ai-firebase-adminsdk-fbsvc-fc69cf4ed2.json"
-    )
+    firebase_credentials = dict(st.secrets["firebase"])
+
+    cred = credentials.Certificate(firebase_credentials)
 
     firebase_admin.initialize_app(cred)
 
