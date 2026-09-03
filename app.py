@@ -8,7 +8,7 @@ from google import genai
 
 import firebase_admin
 from firebase_admin import credentials, firestore, auth
-
+import extra_streamlit_components as stx
 
 # =========================================================
 # CONFIGURATION
@@ -16,8 +16,8 @@ from firebase_admin import credentials, firestore, auth
 
 load_dotenv()
 
-API_KEY = os.getenv("GEMINI_API_KEY")
-FIREBASE_API_KEY = os.getenv("FIREBASE_API_KEY")
+API_KEY = os.getenv("GEMINI_API_KEY") or st.secrets.get("GEMINI_API_KEY")
+FIREBASE_API_KEY = os.getenv("FIREBASE_API_KEY") or st.secrets.get("FIREBASE_API_KEY")
 
 # Check Gemini API key
 if not API_KEY:
@@ -252,9 +252,73 @@ st.set_page_config(
 # SESSION STATE
 # =========================================================
 
-if "user" not in st.session_state:
+# =========================================================
+# PERSISTENT LOGIN
+# =========================================================
 
+cookie_manager = stx.CookieManager()
+
+if "user" not in st.session_state:
     st.session_state.user = None
+
+
+def restore_login():
+
+    refresh_token = cookie_manager.get("refresh_token")
+
+    if not refresh_token:
+        return
+
+    try:
+
+        url = (
+            "https://securetoken.googleapis.com/v1/token"
+            f"?key={FIREBASE_API_KEY}"
+        )
+
+        payload = {
+            "grant_type": "refresh_token",
+            "refresh_token": refresh_token
+        }
+
+        response = requests.post(
+            url,
+            data=payload,
+            timeout=10
+        )
+
+        result = response.json()
+
+        if "id_token" in result:
+
+            new_id_token = result["id_token"]
+
+            new_refresh_token = result.get(
+                "refresh_token",
+                refresh_token
+            )
+
+            decoded_token = verify_firebase_token(
+                new_id_token
+            )
+
+            if decoded_token:
+
+                st.session_state.user = decoded_token
+
+                cookie_manager.set(
+                    "refresh_token",
+                    new_refresh_token,
+                    max_age=60 * 60 * 24 * 30
+                )
+
+    except Exception:
+        pass
+
+
+# Restore login after browser refresh
+if st.session_state.user is None:
+    restore_login()
 
 
 # =========================================================
@@ -338,7 +402,11 @@ if st.session_state.user is None:
                     if decoded_token:
 
                         st.session_state.user = decoded_token
-
+                        cookie_manager.set(
+                            "refresh_token",
+                            result["refreshToken"],
+                            max_age=60 * 60 * 24 * 30
+                        )
                         st.success(
                             "✅ Login successful!"
                         )
@@ -562,6 +630,7 @@ if st.sidebar.button(
 ):
 
     st.session_state.user = None
+    cookie_manager.delete("refresh_token")
 
     st.session_state.pop(
         "ai_answer",
