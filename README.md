@@ -1,22 +1,31 @@
 # 🤖 Notes Assistant AI
 
-> An AI-powered note-taking and learning assistant built with **Python, Streamlit, and Google Gemini API**.
+> An AI-powered note-taking and learning assistant built with **Python, Streamlit, Firebase, Firestore, and Google Gemini API**.
 
-**Notes Assistant AI** is a web-based application that helps users create, manage, search, and interact with their notes using Artificial Intelligence.
+Notes Assistant AI is a web-based AI productivity and learning application that allows users to create, manage, search, edit, and delete their notes while interacting with Google's Gemini AI.
 
-The project combines a simple note-management system with Google's Gemini AI, allowing users to ask questions about their saved notes, identify mistakes, understand concepts, and generate useful explanations.
+The application combines **secure user authentication, cloud-based note storage, and AI-powered assistance** into a single workflow.
 
 ---
 
 ## 🚀 Live Demo
 
-🌐 **Live App:** https://notes-assistance-ai.streamlit.app/
+🌐 **Live App:**  
+https://notes-assistance-ai.streamlit.app/
 
-You can open the application directly in your browser without installing anything locally.
+The application can be opened directly in a browser.
 
 ---
 
 ## ✨ Features
+
+### 🔐 User Authentication
+
+Users can create an account and securely log in using **Firebase Authentication**.
+
+Each user's notes are associated with their unique Firebase user ID.
+
+---
 
 ### 📝 Add Notes
 
@@ -24,37 +33,58 @@ Create and save notes directly from the application.
 
 Each note contains:
 
-* Note title
-* Note content
+- Note title
+- Note content
 
-Notes are stored locally in a JSON file.
+Notes are stored in **Cloud Firestore**.
 
 ---
 
 ### 📖 View Notes
 
-View all previously saved notes in an organized interface.
+View all saved notes in an organized interface.
 
-Each note can be expanded to read its complete content.
+Users can expand notes to read their complete content.
 
 ---
 
 ### 🔎 Search Notes
 
-Search through your saved notes using keywords.
+Search through saved notes using keywords.
 
 The search checks both:
 
-* Note titles
-* Note content
+- Note titles
+- Note content
 
 This makes it easier to quickly find specific information.
 
 ---
 
+### ✏️ Edit Notes
+
+Existing notes can be edited directly from the application.
+
+Users can update:
+
+- Note title
+- Note content
+
+The updated note is then saved back to Firestore.
+
+---
+
+### 🗑️ Delete Notes
+
+Users can delete notes they no longer need.
+
+The selected note is removed from the user's Firestore data.
+
+---
+
 ### 🧠 Ask AI About Notes
 
-This is the core AI feature of the project.
+This is one of the core AI features of the project.
 
 Users can ask Gemini questions based specifically on their saved notes.
 
@@ -62,402 +92,18 @@ For example:
 
 > "Find mistakes in my Linux notes."
 
-The application sends the user's notes along with the question to Gemini and generates an answer based on the available notes.
+The application provides the user's notes as context to Gemini and generates a response based on the available information.
 
 The AI can be used to:
 
-* Explain concepts
-* Find mistakes
-* Clarify confusing topics
-* Revise notes
-* Answer questions
-* Improve understanding of study material
+- Explain concepts
+- Find mistakes
+- Clarify confusing topics
+- Revise notes
+- Answer questions
+- Improve understanding of study material
 
 ---
 
 ### 💾 Save AI Responses
 
-AI-generated responses can also be saved directly into the user's notes.
-
-After receiving an AI response, the user can:
-
-1. Review the generated answer
-2. Edit the note title
-3. Save the response
-4. Find it later inside **View Notes**
-
-This turns the AI from just a question-answering tool into part of the note-taking workflow.
-
----
-
-### 🤖 Chat with AI
-
-The application also includes a general-purpose Gemini chat mode.
-
-Unlike **Ask AI About Notes**, this feature does not use the user's saved notes as context.
-
-Users can ask general questions and receive responses from Gemini.
-
----
-
-## 🧠 How It Works
-
-The application follows a simple architecture:
-
-```text
-                    ┌──────────────────┐
-                    │      User        │
-                    └────────┬─────────┘
-                             │
-                             ▼
-                    ┌──────────────────┐
-                    │  Streamlit UI    │
-                    └────────┬─────────┘
-                             │
-              ┌──────────────┼──────────────┐
-              │              │              │
-              ▼              ▼              ▼
-        Add / View       Search Notes    Ask Gemini
-           Notes                            │
-              │                             ▼
-              │                     ┌───────────────┐
-              │                     │ Google Gemini │
-              │                     │      API      │
-              │                     └───────┬───────┘
-              │                             │
-              │                             ▼
-              │                       AI Response
-              │                             │
-              └──────────────┬──────────────┘
-                             ▼
-                       notes.json
-```
-
----
-
-## 🛠️ Technologies Used
-
-### Python
-
-The main programming language used to build the application.
-
-### Streamlit
-
-Used to transform the Python application into an interactive web application.
-
-### Google Gemini API
-
-Provides the AI capabilities of the application.
-
-The project uses the `google-genai` Python SDK to communicate with Gemini.
-
-### JSON
-
-Used as the current lightweight storage mechanism for notes.
-
-### python-dotenv
-
-Used locally to load environment variables such as the Gemini API key from a `.env` file.
-
----
-
-## 📂 Project Structure
-
-```text
-Notes assistant ai/
-│
-├── app.py
-├── notes.json
-├── requirements.txt
-├── README.md
-├── .gitignore
-└── .env
-```
-
-### `app.py`
-
-The main Streamlit application.
-
-It contains:
-
-* User interface
-* Note management
-* Search functionality
-* Gemini integration
-* AI response handling
-* Saving AI responses as notes
-
-### `notes.json`
-
-Stores the application's notes.
-
-Example structure:
-
-```json
-[
-    {
-        "title": "Linux Commands",
-        "content": "Linux is an open-source operating system..."
-    }
-]
-```
-
-### `requirements.txt`
-
-Contains the Python dependencies required to run the application.
-
-### `.env`
-
-Used during local development to store the Gemini API key.
-
-Example:
-
-```env
-GEMINI_API_KEY=your_api_key_here
-```
-
-**Never commit your `.env` file or expose your API key publicly.**
-
----
-
-## ⚙️ Run the Project Locally
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
-cd YOUR_REPOSITORY
-```
-
-### 2. Create a virtual environment
-
-```powershell
-py -3.14 -m venv .venv
-```
-
-Activate it:
-
-```powershell
-.\.venv\Scripts\Activate.ps1
-```
-
-### 3. Install dependencies
-
-```powershell
-python -m pip install -r requirements.txt
-```
-
-### 4. Create a `.env` file
-
-Inside the project directory, create:
-
-```text
-.env
-```
-
-Add:
-
-```env
-GEMINI_API_KEY=your_api_key_here
-```
-
-### 5. Run the application
-
-```powershell
-streamlit run app.py
-```
-
-The application will open in your browser.
-
----
-
-## 🔐 Environment Variables
-
-The application expects the following environment variable:
-
-| Variable         | Description           |
-| ---------------- | --------------------- |
-| `GEMINI_API_KEY` | Google Gemini API key |
-
-For local development, the key is loaded using `python-dotenv`.
-
-For deployment, the API key should be stored using the hosting platform's secret/environment-variable system rather than committing it to GitHub.
-
----
-
-## 🌐 Deployment
-
-The application is deployed using **Streamlit Community Cloud**.
-
-The deployment process is:
-
-```text
-GitHub Repository
-        │
-        ▼
-Streamlit Community Cloud
-        │
-        ▼
-Install Dependencies
-        │
-        ▼
-Run app.py
-        │
-        ▼
-Public Web Application
-```
-
-This allows the project to be shared as a normal web application instead of requiring users to download and run the Python code themselves.
-
----
-
-## 💡 Project Concept
-
-The main idea behind Notes Assistant AI is to combine **traditional note-taking with AI-assisted learning**.
-
-Instead of keeping notes and an AI assistant completely separate, the application allows the AI to work directly with the user's saved notes.
-
-For example:
-
-```text
-User's Notes
-     │
-     ▼
-Ask a Question
-     │
-     ▼
-Gemini AI
-     │
-     ▼
-Context-aware Answer
-     │
-     ▼
-Save Answer as a New Note
-```
-
-This creates a simple learning loop:
-
-**Write → Ask → Understand → Save → Review**
-
----
-
-## 🧩 Prompt Engineering
-
-An important part of the project is how the user's notes are provided to the AI.
-
-When a user asks a question in **Ask AI About Notes**, the application builds a prompt containing:
-
-* The AI's role
-* The user's saved notes
-* The user's question
-* Instructions for producing a useful answer
-
-Conceptually:
-
-```text
-You are Notes Assistant AI.
-
-USER NOTES:
-[Saved notes]
-
-USER QUESTION:
-[User's question]
-
-Give a clear and helpful answer.
-If the notes contain an error, point it out clearly.
-```
-
-This is an example of **prompt engineering** because the application does not simply send the user's question to the model. It provides additional context and instructions to guide the model toward a specific task.
-
----
-
-## 🎯 What This Project Demonstrates
-
-This project demonstrates practical experience with:
-
-* Python application development
-* Streamlit web application development
-* REST/API-based AI integration
-* Google Gemini API
-* Prompt engineering
-* Environment variables
-* JSON-based data storage
-* Session state management
-* Git and GitHub
-* Virtual environments
-* Dependency management
-* Cloud deployment
-* Building AI-assisted productivity tools
-
----
-
-## 🔮 Future Improvements
-
-The current version is intentionally simple, but the project can be expanded significantly.
-
-Possible improvements include:
-
-### 🗄️ Better Database
-
-Replace `notes.json` with a proper database such as:
-
-* SQLite
-* PostgreSQL
-* MongoDB
-
-### 🔐 User Accounts
-
-Add authentication so different users can have their own private notes.
-
-### 🧠 Better AI Context
-
-Instead of sending every note to Gemini, implement smarter retrieval so the AI only receives the most relevant notes.
-
-### 🔍 Semantic Search
-
-Use embeddings/vector search to find notes based on meaning rather than just matching keywords.
-
-### ✏️ Note Editing
-
-Allow users to edit and delete existing notes.
-
-### 📱 Improved UI
-
-Build a more polished frontend and responsive interface.
-
-### ⚡ JavaScript Frontend
-
-The current application uses Streamlit for rapid development. A future version could use:
-
-* JavaScript
-* React
-* FastAPI
-* A dedicated database
-
-This would provide greater control over the application's UI and architecture.
-
----
-
-## ⚠️ Current Limitations
-
-This project is currently designed as a lightweight personal/portfolio application.
-
-Because notes are stored in `notes.json`, it is not yet designed as a multi-user production database.
-
-The application also relies on an external Gemini API, meaning AI functionality depends on API availability and applicable API limits.
-
----
-
-## 📜 License
-
-This project is available for educational and portfolio purposes.
-
----
-
-## 👨‍💻 About
-
-**Notes Assistant AI** was created as an experiment in combining Python development, AI APIs, prompt engineering, and rapid web application development.
-
-The project started as a Python-based notes application and evolved into an AI-powered web application using Streamlit and Gemini.
-
-> **Build → Experiment → Learn → Improve. 🚀**
