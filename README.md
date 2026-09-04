@@ -107,3 +107,46 @@ The AI can be used to:
 
 ### 💾 Save AI Responses
 
+AI-generated responses can be saved directly as new notes.
+
+This creates a useful learning workflow:
+
+**Ask → Understand → Save → Review**
+
+---
+
+### 🤖 Multi-Turn AI Chat
+
+The application also includes a general-purpose Gemini chat mode.
+
+Users can have a continuous conversation with the AI instead of asking completely independent questions.
+
+The chat maintains conversation history during the active session.
+
+---
+
+## 🧠 How It Works
+
+The application follows this architecture:
+
+```text
+                    ┌──────────────────┐
+                    │      User        │
+                    └────────┬─────────┘
+                             │
+                             ▼
+                    ┌──────────────────┐
+                    │  Streamlit UI    │
+                    └────────┬─────────┘
+                             │
+             ┌───────────────┼────────────────┐
+             │               │                │
+             ▼               ▼                ▼
+       Authentication    Notes Manager    Gemini AI
+             │               │                │
+             ▼               ▼                ▼
+      Firebase Auth      Firestore       Gemini API
+                             │                │
+                             └───────┬────────┘
+                                     ▼
+                              AI Responses
